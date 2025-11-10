@@ -131,7 +131,7 @@ ProxmoxDisasterRecoveryAutomation/
 <br>
 
 ```bash
-# 1. Clone & Setup
+# 1️⃣ Clone Repository
 git clone https://github.com/AMMorsy/ProxmoxDisasterRecoveryAutomation.git
 cd ProxmoxDisasterRecoveryAutomation
 python -m venv .venv
@@ -139,7 +139,7 @@ python -m venv .venv
 pip install -r requirements.txt
 
 
-# 2. Configure .env
+# 2️⃣ Configure .env
 # Example configuration:
 
 # Proxmox API
@@ -148,7 +148,7 @@ PVE_USER=user@pve
 PVE_TOKEN_NAME=apitoken
 PVE_TOKEN_VALUE=xxxxxxxx
 
-# Behavior Flags
+# Behavior flags
 FORCE_DRY_RUN=1
 DRY_RUN=1
 RESTORE_ENABLED=1
@@ -160,50 +160,18 @@ ALLOW_VMIDS=*
 REDIS_URL=redis://localhost:6379
 
 
-# 3. Run Services
+# 3️⃣ Run Services
 # In separate terminals:
 
-# Terminal 1: Django
+# Terminal 1 – Django
 python manage.py runserver
 
-# Terminal 2: Celery worker
+# Terminal 2 – Celery Worker
 celery -A dr_automation worker -l info -P solo
 
 
-# 4. Access Web UI
-# Go to http://localhost:8000
-# Login → My VMs → click Backup or Restore (DRY-RUN) → monitor in Jobs page.
-
-
-# 🧠 Safety & Modes
-# Flag descriptions:
-# FORCE_DRY_RUN=1        -> Blocks all real API calls, even if DRY_RUN=0
-# DRY_RUN=1              -> Simulates backup/restore actions (safe default)
-# REQUIRE_DRY_RUN=1      -> Disables POST requests if DRY_RUN is off
-# ALLOW_VMIDS=*          -> Defines which VMs are allowed for actions
-# RESTORE_ENABLED / QUEUE_ENABLED -> Master toggles for features
-
-# When SAFE MODE is active:
-# - Every page shows a banner
-# - Logs use mock operations only
-
-
-# 🔐 Security Notes
-# - Uses Proxmox Token API (no password auth)
-# - Each Django user has isolated VM access
-# - SAFE MODE ensures no actual system modifications unless explicitly disabled
-
-
-# 🚀 Roadmap
-# - PBS integration for true live restore
-# - Node failover & IP swap automation
-# - Email/webhook job notifications
-# - OAuth / LDAP login
-# - REST API client packaging
-
-
-# 🧾 License
-# MIT License © 2025 AMMorsy
-
-
+# 4️⃣ Access Web UI
+# Go to: http://localhost:8000
+# Login → My VMs → click Backup or Restore (DRY-RUN)
+# Monitor progress in the Jobs page.
 
