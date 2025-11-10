@@ -40,8 +40,8 @@ It is designed as a foundation for full Disaster Recovery automation — ready t
 - **Auth:** Django built-in users & session login  
 
 ---
-
-<details><summary><b>Project Structure</b></summary>
+## 📦 Project Structure
+<details><summary><b>Click to expand full Project Structure</b></summary>
 <br>
 <pre>
 ProxmoxDisasterRecoveryAutomation/
@@ -129,6 +129,7 @@ ProxmoxDisasterRecoveryAutomation/
 
 <details><summary><b>Click to expand full setup guide</b></summary>
 <br>
+<pre>
 
 ```bash
 # 1️⃣ Clone Repository
@@ -174,6 +175,8 @@ celery -A dr_automation worker -l info -P solo
 # Go to: http://localhost:8000
 # Login → My VMs → click Backup or Restore (DRY-RUN)
 # Monitor progress in the Jobs page.
+</pre>
+</details>
 
 🧠 Safety & Modes
 Flag	Purpose
