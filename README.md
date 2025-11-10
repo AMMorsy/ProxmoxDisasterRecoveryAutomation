@@ -41,38 +41,42 @@ It is designed as a foundation for full Disaster Recovery automation — ready t
 
 ---
 
+<details><summary><b>Project Structure</b></summary>
+<br>
+<pre>
 ProxmoxDisasterRecoveryAutomation/
 ├─ manage.py
 ├─ README.md
 ├─ requirements.txt
 ├─ .env.example
 │
-├─ dr_automation/                # Django project
+├─ dr_automation/
 │  ├─ __init__.py
 │  ├─ settings.py
 │  ├─ urls.py
 │  └─ wsgi.py
 │
-├─ restore/                      # Core app: models, tasks, API endpoints
+├─ restore/
 │  ├─ __init__.py
 │  ├─ models.py
-│  ├─ views.py                   # REST endpoints (backup/restore/jobs)
-│  ├─ tasks.py                   # Celery workers (mock/real actions)
-│  ├─ api.py                     # Proxmox interface
+│  ├─ views.py
+│  ├─ tasks.py
+│  ├─ api.py
 │  └─ migrations/
 │
 ├─ frontend/
-│  └─ context_processors.py      # SAFE MODE banner context
+│  └─ context_processors.py
 │
 ├─ templates/
 │  └─ frontend/
-│     ├─ my_vms.html             # VM list + actions
-│     ├─ vm_detail.html          # Single VM backups/restore
-│     ├─ jobs.html               # Jobs table + modal logs
-│     └─ safe_banner.html        # DRY-RUN / warning banner
+│     ├─ my_vms.html
+│     ├─ vm_detail.html
+│     ├─ jobs.html
+│     └─ safe_banner.html
 │
-└─ static/                       # (optional) static assets
-
+└─ static/
+</pre>
+</details>
 
 
 ---
