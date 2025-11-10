@@ -46,37 +46,73 @@ It is designed as a foundation for full Disaster Recovery automation — ready t
 <pre>
 ProxmoxDisasterRecoveryAutomation/
 ├─ manage.py
-├─ README.md
-├─ requirements.txt
-├─ .env.example
+├─ db.sqlite3
+├─ .env
 │
 ├─ dr_automation/
 │  ├─ __init__.py
+│  ├─ asgi.py
+│  ├─ celery.py
 │  ├─ settings.py
 │  ├─ urls.py
 │  └─ wsgi.py
 │
-├─ restore/
+├─ accounts/
 │  ├─ __init__.py
+│  ├─ admin.py
+│  ├─ apps.py
 │  ├─ models.py
+│  ├─ tests.py
 │  ├─ views.py
-│  ├─ tasks.py
-│  ├─ api.py
+│  └─ migrations/
+│
+├─ dashboard/
+│  ├─ __init__.py
+│  ├─ admin.py
+│  ├─ apps.py
+│  ├─ models.py
+│  ├─ tests.py
+│  ├─ views.py
 │  └─ migrations/
 │
 ├─ frontend/
-│  └─ context_processors.py
+│  ├─ __init__.py
+│  ├─ context_processors.py
+│  ├─ urls.py
+│  └─ views.py
+│
+├─ proxmox/
+│  ├─ __init__.py
+│  ├─ admin.py
+│  ├─ api.py
+│  ├─ apps.py
+│  ├─ models.py
+│  ├─ tests.py
+│  ├─ views.py
+│  └─ migrations/
+│
+├─ restore/
+│  ├─ __init__.py
+│  ├─ admin.py
+│  ├─ apps.py
+│  ├─ models.py
+│  ├─ tasks.py
+│  ├─ tests.py
+│  ├─ views.py
+│  └─ migrations/
 │
 ├─ templates/
 │  └─ frontend/
-│     ├─ my_vms.html
-│     ├─ vm_detail.html
 │     ├─ jobs.html
-│     └─ safe_banner.html
+│     ├─ login.html
+│     ├─ my_vms.html
+│     ├─ safe_banner.html
+│     └─ vm_detail.html
 │
-└─ static/
+└─ .venv/                        # Virtual environment (ignored in .gitignore)
 </pre>
 </details>
+
 
 
 ---
