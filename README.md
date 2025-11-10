@@ -41,17 +41,38 @@ It is designed as a foundation for full Disaster Recovery automation — ready t
 
 ---
 
-## 📦 Project Structure
+ProxmoxDisasterRecoveryAutomation/
+├─ manage.py
+├─ README.md
+├─ requirements.txt
+├─ .env.example
+│
+├─ dr_automation/                # Django project
+│  ├─ __init__.py
+│  ├─ settings.py
+│  ├─ urls.py
+│  └─ wsgi.py
+│
+├─ restore/                      # Core app: models, tasks, API endpoints
+│  ├─ __init__.py
+│  ├─ models.py
+│  ├─ views.py                   # REST endpoints (backup/restore/jobs)
+│  ├─ tasks.py                   # Celery workers (mock/real actions)
+│  ├─ api.py                     # Proxmox interface
+│  └─ migrations/
+│
+├─ frontend/
+│  └─ context_processors.py      # SAFE MODE banner context
+│
+├─ templates/
+│  └─ frontend/
+│     ├─ my_vms.html             # VM list + actions
+│     ├─ vm_detail.html          # Single VM backups/restore
+│     ├─ jobs.html               # Jobs table + modal logs
+│     └─ safe_banner.html        # DRY-RUN / warning banner
+│
+└─ static/                       # (optional) static assets
 
-dr_automation/ # Django project
-frontend/ # Templates and UI
-restore/ # Core app: models, tasks, API endpoints
-├─ models.py
-├─ views.py
-├─ tasks.py
-├─ api.py (Proxmox interface)
-templates/frontend/ # HTML templates
-.env # Environment config
 
 
 ---
@@ -78,7 +99,7 @@ Example:
 env
 Copy code
 # Proxmox API
-PVE_HOST=https://pve.youruser.com:8006
+PVE_HOST=https://pve.your's.com:port
 PVE_USER=user@pve
 PVE_TOKEN_NAME=apitoken
 PVE_TOKEN_VALUE=xxxxxxxx
@@ -92,7 +113,7 @@ REQUIRE_DRY_RUN=1
 ALLOW_VMIDS=*
 
 # Redis
-REDIS_URL=redis://127.0.0.1:6379/0
+REDIS_URL=redis://localhost:6379
 3. Run Services
 In separate terminals:
 
@@ -102,7 +123,7 @@ python manage.py runserver
 # Terminal 2: Celery worker
 celery -A dr_automation worker -l info -P solo
 4. Access Web UI
-Go to: http://127.0.0.1:8000/
+Go to: http://localhost:port/
 Login → My VMs → click Backup or Restore (DRY-RUN) → monitor in Jobs page.
 
 🧠 Safety & Modes
