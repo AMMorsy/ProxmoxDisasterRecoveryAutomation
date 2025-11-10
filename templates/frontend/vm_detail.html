@@ -1,0 +1,61 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>VM {{ vmid }}</title></head>
+<body style="font-family: Arial; max-width:1100px;margin:24px auto">
+  {% include "frontend/safe_banner.html" %}
+
+  <div style="display:flex;justify-content:space-between;align-items:center">
+    <h2>VM {{ vmid }}</h2>
+    <div><a href="/vms/">Back</a> | <a href="{% url 'frontend:jobs' %}">Jobs</a></div>
+  </div>
+
+  <div id="info">Loading backups…</div>
+  <div id="backups" style="margin-top:12px"></div>
+
+<script>
+const vmid = {{ vmid }};
+async function loadBackups() {
+  document.getElementById("info").innerText = "Loading backups...";
+  const res = await fetch(`/api/v1/vms/${vmid}/backups/?storage=lv1`, { credentials: "same-origin" });
+  const j = await res.json();
+  document.getElementById("info").innerText = `Node: ${j.node} • storage: ${j.storage}`;
+  const backups = j.backups || [];
+  const div = document.getElementById("backups");
+  if (!backups.length) div.innerHTML = "<i>No backup files found.</i>";
+  else {
+    div.innerHTML = "";
+    backups.forEach(b => {
+      const el = document.createElement("div");
+      el.style.padding = "8px 0";
+      el.innerHTML = `<b>${b.volid}</b> — ${new Date((b.ctime||0)*1000).toLocaleString()} 
+        <button data-vol="${b.volid}" style="margin-left:12px">One-Click Restore (DRY RUN)</button>`;
+      div.appendChild(el);
+    });
+    div.querySelectorAll("button").forEach(btn => {
+      btn.onclick = async () => {
+        if (!confirm("This will perform a DRY RUN restore job (no changes). Continue?")) return;
+        btn.disabled = true;
+        const body = { backup_volid: btn.dataset.vol, target_node: j.node, storage: j.storage };
+        function getCSRF() {
+  return document.cookie.split('; ')
+    .find(r => r.startsWith('csrftoken='))?.split('=')[1];
+}
+
+        const p = await fetch(`/api/v1/vms/${vmid}/restore/`, {
+        method: "POST",
+        credentials: "same-origin",
+        headers: {
+        "Content-Type": "application/json",
+        "X-CSRFToken": getCSRF()
+        },
+        body: JSON.stringify(body)
+        });
+        const resp = await p.json();
+        alert(JSON.stringify(resp));
+        btn.disabled = false;
+      }
+    });
+  }
+}
+window.onload = loadBackups;
+</script>
+</body></html>

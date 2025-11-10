@@ -1,0 +1,90 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>My VMs</title></head>
+<body style="font-family: Arial; max-width:1100px;margin:24px auto">
+  {% include "frontend/safe_banner.html" %}
+
+  <div style="display:flex;justify-content:space-between;align-items:center">
+    <h2>My VMs</h2>
+    <div>
+      <a href="{% url 'frontend:jobs' %}">Jobs</a> |
+      <a href="{% url 'frontend:logout' %}">Logout</a>
+    </div>
+  </div>
+
+  <div id="loading">Loading VMs…</div>
+  <table id="vms" border="1" cellpadding="8" style="width:100%;display:none;margin-top:12px"></table>
+
+<script>
+function getCSRF() {
+  return document.cookie.split('; ').find(r => r.startsWith('csrftoken='))?.split('=')[1];
+}
+
+async function restoreLatest(vmid) {
+  try {
+    const meta = await fetch(`/api/v1/vms/${vmid}/backups/?storage=lv1`, { credentials: "same-origin" });
+    const j = await meta.json();
+    const backups = (j.backups || []).sort((a,b) => (b.ctime||0)-(a.ctime||0));
+    if (!backups.length) { alert("No backups found for this VM."); return; }
+    const vol = backups[0].volid;
+
+    const res = await fetch(`/api/v1/vms/${vmid}/restore/`, {
+      method: "POST",
+      credentials: "same-origin",
+      headers: { "Content-Type":"application/json", "X-CSRFToken": getCSRF() },
+      body: JSON.stringify({ backup_volid: vol, target_node: j.node, storage: j.storage })
+    });
+    const rj = await res.json();
+    alert(JSON.stringify(rj));
+  } catch (e) {
+    alert("Restore failed: " + e);
+  }
+}
+
+async function backupNow(vmid, node) {
+  try {
+    const res = await fetch(`/api/v1/vms/${vmid}/backup/`, {
+      method: "POST",
+      credentials: "same-origin",
+      headers: { "Content-Type":"application/json", "X-CSRFToken": getCSRF() },
+      body: JSON.stringify({ node })
+    });
+    const rj = await res.json();
+    alert(JSON.stringify(rj));
+  } catch (e) {
+    alert("Backup failed: " + e);
+  }
+}
+
+async function fetchVMs() {
+  document.getElementById("loading").style.display = "block";
+  const res = await fetch("/api/v1/vms_list/", { credentials: "same-origin" });
+  const j = await res.json();
+  document.getElementById("loading").style.display = "none";
+  const tbl = document.getElementById("vms");
+  tbl.style.display = "table";
+  tbl.innerHTML = "<tr><th>VMID</th><th>Name</th><th>Node</th><th>Actions</th></tr>";
+
+  (j.vms || []).forEach(vm => {
+    const row = document.createElement("tr");
+    row.innerHTML = `<td>${vm.vmid}</td>
+                     <td>${vm.name}</td>
+                     <td>${vm.node}</td>
+                     <td>
+                       <button data-vmid="${vm.vmid}" data-node="${vm.node}" class="btn-backup">Backup (DRY RUN)</button>
+                       <button data-vmid="${vm.vmid}" class="btn-restore">Restore Latest (DRY RUN)</button>
+                       <a href="/vms/${vm.vmid}/" style="margin-left:8px">View</a>
+                     </td>`;
+    tbl.appendChild(row);
+  });
+
+  tbl.querySelectorAll(".btn-backup").forEach(b => {
+    b.onclick = () => backupNow(b.dataset.vmid, b.dataset.node);
+  });
+  tbl.querySelectorAll(".btn-restore").forEach(b => {
+    b.onclick = () => restoreLatest(b.dataset.vmid);
+  });
+}
+
+window.onload = fetchVMs;
+</script>
+</body></html>

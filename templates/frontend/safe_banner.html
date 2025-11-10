@@ -1,0 +1,9 @@
+{% if SAFE_MODE %}
+<div style="position:sticky;top:0;z-index:9999;background:#111;color:#22d3ee;padding:8px 12px;font:14px/1.4 Arial">
+  <b>SAFE MODE</b> — DRY RUN ENABLED. All actions are simulations. No changes are made to Proxmox.
+</div>
+{% else %}
+<div style="position:sticky;top:0;z-index:9999;background:#7a0000;color:#fff;padding:8px 12px;font:14px/1.4 Arial">
+  <b>WARNING:</b> DRY RUN is OFF. Actions will affect Proxmox.
+</div>
+{% endif %}

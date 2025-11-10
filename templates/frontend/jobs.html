@@ -1,0 +1,108 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>Restore Jobs</title></head>
+<body style="font-family: Arial; max-width:960px;margin:24px auto">
+  {% include "frontend/safe_banner.html" %}
+
+  <div style="display:flex;justify-content:space-between;align-items:center">
+    <h2>Restore Jobs</h2>
+    <div><a href="/vms/">Back</a></div>
+  </div>
+
+  <div style="margin:8px 0; font-size:14px" id="meta"></div>
+
+  <div style="display:flex;gap:8px;align-items:center;margin:8px 0">
+    <label>Status
+      <select id="status">
+        <option value="all">All</option>
+        <option value="pending">Pending</option>
+        <option value="running">Running</option>
+        <option value="success">Success</option>
+        <option value="failed">Failed</option>
+      </select>
+    </label>
+    <label>Limit
+      <select id="limit">
+        <option>20</option><option selected>50</option><option>100</option>
+      </select>
+    </label>
+    <label><input type="checkbox" id="autoref" checked> Auto-refresh</label>
+    <button id="refresh">Refresh now</button>
+  </div>
+
+  <div id="list">Loading…</div>
+
+  <!-- Simple modal -->
+  <div id="modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);align-items:center;justify-content:center">
+    <div style="background:#fff;max-width:800px;width:90%;padding:14px;border-radius:8px">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <b>Job log</b>
+        <button onclick="closeModal()">Close</button>
+      </div>
+      <pre id="log" style="white-space:pre-wrap;background:#f8fafc;padding:10px;border:1px solid #e5e7eb;max-height:60vh;overflow:auto;margin-top:8px"></pre>
+    </div>
+  </div>
+
+<script>
+const REFRESH_MS = 3000;
+const statusSel = document.getElementById('status');
+const limitSel  = document.getElementById('limit');
+const autoRef   = document.getElementById('autoref');
+document.getElementById('refresh').onclick = ()=> loadJobs(true);
+
+function badge(s){
+  const colors = {SUCCESS:'#d1fae5',FAILED:'#fee2e2',RUNNING:'#e0e7ff',PENDING:'#f3f4f6'};
+  return `<span style="background:${colors[s]||'#eee'};padding:2px 6px;border-radius:6px">${s}</span>`;
+}
+
+function openModal(text){ document.getElementById('log').textContent = text; document.getElementById('modal').style.display='flex'; }
+function closeModal(){ document.getElementById('modal').style.display='none'; }
+
+async function loadJobs(manual=false){
+  const qs = new URLSearchParams({ status: statusSel.value, limit: limitSel.value }).toString();
+  const r = await fetch(`/api/v1/jobs_list/?${qs}`, { credentials:'same-origin' });
+  const j = await r.json();
+
+  const div = document.getElementById("list");
+  if(!j.jobs || !j.jobs.length){ div.innerHTML = "<i>No jobs</i>"; return; }
+  div.innerHTML = `
+    <table border=1 cellpadding=6 style="width:100%">
+      <tr><th>ID</th><th>VM</th><th>Status</th><th>Created</th><th>Log</th></tr>
+    </table>`;
+  const tbl = div.querySelector("table");
+
+  j.jobs.forEach(job=>{
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td>${job.id}</td>
+      <td>${job.vm}</td>
+      <td>${badge(job.status)}</td>
+      <td>${job.created_at}</td>
+      <td><button data-id="${job.id}">View</button></td>`;
+    tbl.appendChild(tr);
+  });
+
+  div.querySelectorAll("button").forEach(btn=>{
+    btn.onclick = async ()=>{
+      const id = btn.dataset.id;
+      const res = await fetch(`/api/v1/jobs/${id}/`, { credentials: "same-origin" });
+      const d = await res.json();
+      openModal(typeof d.log === 'string' ? d.log : JSON.stringify(d, null, 2));
+    };
+  });
+
+  const meta = document.getElementById("meta");
+  const pending = (j.jobs || []).some(x => x.status === 'PENDING' || x.status === 'RUNNING');
+  const counts = j.counts || {};
+  meta.textContent = `Counts — All: ${counts.all||0} • Pending: ${counts.pending||0} • Running: ${counts.running||0} • Success: ${counts.success||0} • Failed: ${counts.failed||0}` +
+                     (pending && autoRef.checked ? " — auto-refreshing…" : "");
+
+  if (!manual && pending && autoRef.checked) setTimeout(loadJobs, REFRESH_MS);
+}
+
+statusSel.onchange = ()=> loadJobs(true);
+limitSel.onchange  = ()=> loadJobs(true);
+autoRef.onchange   = ()=> loadJobs(true);
+
+window.onload = ()=> loadJobs(true);
+</script>
+</body></html>
