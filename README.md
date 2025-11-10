@@ -127,8 +127,8 @@ ProxmoxDisasterRecoveryAutomation/
 
 ## 🧩 **Clone & Setup**
 
-<details><summary><b>Click to expand full setup guide</b></summary>
-<br>
+<details>
+<summary><b>Click to expand full setup guide</b></summary>
 
 ```bash
 # 1️⃣ Clone Repository
@@ -138,42 +138,27 @@ python -m venv .venv
 .venv\Scripts\activate   # on Windows
 pip install -r requirements.txt
 
-
 # 2️⃣ Configure .env
-# Example configuration:
-
-# Proxmox API
+# (example)
 PVE_HOST=https://pve.your's.com:port
 PVE_USER=user@pve
 PVE_TOKEN_NAME=apitoken
 PVE_TOKEN_VALUE=xxxxxxxx
-
-# Behavior flags
 FORCE_DRY_RUN=1
 DRY_RUN=1
 RESTORE_ENABLED=1
 QUEUE_ENABLED=1
 REQUIRE_DRY_RUN=1
 ALLOW_VMIDS=*
-
-# Redis
 REDIS_URL=redis://localhost:6379
 
-
 # 3️⃣ Run Services
-# In separate terminals:
-
-# Terminal 1 – Django
 python manage.py runserver
-
-# Terminal 2 – Celery Worker
 celery -A dr_automation worker -l info -P solo
 
-
 # 4️⃣ Access Web UI
-# Go to: http://localhost:8000
-# Login → My VMs → click Backup or Restore (DRY-RUN)
-# Monitor progress in the Jobs page.
+# http://localhost:8000 → My VMs → Backup / Restore (DRY-RUN) → Jobs
+</details>
 
 
 🧠 Safety & Modes
