@@ -125,26 +125,30 @@ ProxmoxDisasterRecoveryAutomation/
 - Proxmox VE with API access
 - (Optional) Virtual environment recommended
 
-### 1. Clone & Setup
+## 🧩 **Clone & Setup**
+
+<details><summary><b>Click to expand full setup guide</b></summary>
+<br>
 
 ```bash
+# 1. Clone & Setup
 git clone https://github.com/AMMorsy/ProxmoxDisasterRecoveryAutomation.git
 cd ProxmoxDisasterRecoveryAutomation
 python -m venv .venv
 .venv\Scripts\activate   # on Windows
 pip install -r requirements.txt
-2. Configure .env
-Example:
 
-env
-Copy code
+
+# 2. Configure .env
+# Example configuration:
+
 # Proxmox API
 PVE_HOST=https://pve.your's.com:port
 PVE_USER=user@pve
 PVE_TOKEN_NAME=apitoken
 PVE_TOKEN_VALUE=xxxxxxxx
 
-# Behavior flags
+# Behavior Flags
 FORCE_DRY_RUN=1
 DRY_RUN=1
 RESTORE_ENABLED=1
@@ -154,46 +158,51 @@ ALLOW_VMIDS=*
 
 # Redis
 REDIS_URL=redis://localhost:6379
-3. Run Services
-In separate terminals:
+
+
+# 3. Run Services
+# In separate terminals:
 
 # Terminal 1: Django
 python manage.py runserver
 
 # Terminal 2: Celery worker
 celery -A dr_automation worker -l info -P solo
-4. Access Web UI
-Go to: http://localhost:port/
-Login → My VMs → click Backup or Restore (DRY-RUN) → monitor in Jobs page.
 
-🧠 Safety & Modes
-Flag	Purpose
-FORCE_DRY_RUN=1	Absolutely blocks any real API calls, even if DRY_RUN=0.
-DRY_RUN=1	Simulate restore/backup actions (default safe mode).
-REQUIRE_DRY_RUN=1	Prevents POST actions if DRY_RUN is off.
-ALLOW_VMIDS	Restrict which VMIDs are allowed to run operations.
-RESTORE_ENABLED / QUEUE_ENABLED	Master toggles for features.
 
-When SAFE MODE is on, every page displays a banner and logs show mock actions.
+# 4. Access Web UI
+# Go to http://localhost:8000
+# Login → My VMs → click Backup or Restore (DRY-RUN) → monitor in Jobs page.
 
-🔐 Security Notes
-API calls use the Proxmox Token API instead of username/password.
 
-Each Django user owns explicit VM objects — no cross-access.
+# 🧠 Safety & Modes
+# Flag descriptions:
+# FORCE_DRY_RUN=1        -> Blocks all real API calls, even if DRY_RUN=0
+# DRY_RUN=1              -> Simulates backup/restore actions (safe default)
+# REQUIRE_DRY_RUN=1      -> Disables POST requests if DRY_RUN is off
+# ALLOW_VMIDS=*          -> Defines which VMs are allowed for actions
+# RESTORE_ENABLED / QUEUE_ENABLED -> Master toggles for features
 
-SAFE MODE ensures no real system modifications unless explicitly switched off.
+# When SAFE MODE is active:
+# - Every page shows a banner
+# - Logs use mock operations only
 
-🚀 Roadmap
- PBS integration for true live restore
 
- Node failover & IP swap orchestration
+# 🔐 Security Notes
+# - Uses Proxmox Token API (no password auth)
+# - Each Django user has isolated VM access
+# - SAFE MODE ensures no actual system modifications unless explicitly disabled
 
- Email/webhook job notifications
 
- OAuth / LDAP login
+# 🚀 Roadmap
+# - PBS integration for true live restore
+# - Node failover & IP swap automation
+# - Email/webhook job notifications
+# - OAuth / LDAP login
+# - REST API client packaging
 
- REST API client packaging
 
-🧾 License
-MIT License © 2025 AMMorsy
+# 🧾 License
+# MIT License © 2025 AMMorsy
+
 
