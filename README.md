@@ -175,3 +175,30 @@ celery -A dr_automation worker -l info -P solo
 # Login → My VMs → click Backup or Restore (DRY-RUN)
 # Monitor progress in the Jobs page.
 
+🧠 Safety & Modes
+Flag	Purpose
+FORCE_DRY_RUN=1	Blocks all real API calls, even if DRY_RUN=0.
+DRY_RUN=1	Simulates backup/restore operations safely (default).
+REQUIRE_DRY_RUN=1	Disables any POST action when DRY_RUN is off.
+ALLOW_VMIDS	Restrict which VMIDs can run operations.
+RESTORE_ENABLED / QUEUE_ENABLED	Toggles for enabling restore and queuing features.
+
+✅ When SAFE MODE is active, every page shows a visible banner, and all operations are mock executions only.
+
+🔐 Security Notes
+
+Uses Proxmox Token API (no password authentication).
+Each Django user can access only their assigned VMs.
+SAFE MODE guarantees zero real system changes unless explicitly disabled.
+
+🚀 Roadmap
+
+Proxmox Backup Server (PBS) integration for live restore
+Node failover & IP reconfiguration automation
+Email / webhook notifications
+OAuth / LDAP authentication
+REST API client packaging
+
+🧾 License
+
+MIT License © 2025 AMMorsy
