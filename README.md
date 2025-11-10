@@ -129,7 +129,6 @@ ProxmoxDisasterRecoveryAutomation/
 
 <details><summary><b>Click to expand full setup guide</b></summary>
 <br>
-<pre>
 
 ```bash
 # 1️⃣ Clone Repository
@@ -175,7 +174,6 @@ celery -A dr_automation worker -l info -P solo
 # Go to: http://localhost:8000
 # Login → My VMs → click Backup or Restore (DRY-RUN)
 # Monitor progress in the Jobs page.
-</pre>
 </details>
 
 🧠 Safety & Modes
